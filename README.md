@@ -9,6 +9,25 @@ Fore more information please see <a href="http://wokdsem.github.io/Kommander">th
 
 ##Download
 
+Kommander is available on jcenter.
+Please ensure that you are using the latest version
+checking <a href="https://bintray.com/wokdsem/maven/kommander/view">here</a>.
+
+**Maven:**
+
+```xml
+<dependency>
+	<groupId>com.wokdsem.android</groupId>
+	<artifactId>kommander</artifactId>
+	<version>0.9.0</version>
+</dependency>
+```
+
+**Gradle:**
+
+```groovy
+compile 'com.wokdsem.android:kommander:0.9.0'
+```
 
 ##License
 
