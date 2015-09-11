@@ -1,6 +1,6 @@
 package com.wokdsem.android.kommander;
 
-class Kommander {
+public class Kommander {
 
 	private final KommandEngine engine;
 
