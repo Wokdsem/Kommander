@@ -30,7 +30,7 @@ class KommandEngine {
 			@Override
 			public void onKommandExecuted(RunnableKommand kommand) {
 				synchronized (currentRunnableKommands) {
-					currentRunnableKommands.removeValue(kommand.getTag(), kommand);
+					currentRunnableKommands.removeValue(kommand.tag, kommand);
 				}
 			}
 		};
@@ -39,7 +39,7 @@ class KommandEngine {
 	public <T> void executeKommand(KommandBundle<T> bundle) {
 		RunnableKommand<T> rKommand = new RunnableKommand<>(bundle, deliverer, afterExecuted);
 		synchronized (currentRunnableKommands) {
-			currentRunnableKommands.put(rKommand.getTag(), rKommand);
+			currentRunnableKommands.put(rKommand.tag, rKommand);
 		}
 		executor.execute(rKommand);
 	}
