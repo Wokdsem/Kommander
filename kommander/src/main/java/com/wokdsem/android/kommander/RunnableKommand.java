@@ -1,32 +1,47 @@
 package com.wokdsem.android.kommander;
 
+import static com.wokdsem.android.kommander.RunnableState.*;
+
 class RunnableKommand<T> implements Runnable {
 
-	private final KommandBundle<T> bundle;
+	public final String tag;
+
+	private final Action<T> action;
 	private final KommandDeliverer deliverer;
 	private final AfterKommandExecuted afterExecuted;
-	private volatile boolean isCanceled;
+
+	private Thread executor;
+	private RunnableState state;
+	private Response.OnError onError;
+	private Response.OnCompleted<T> onCompleted;
 
 	public RunnableKommand(KommandBundle<T> bundle, KommandDeliverer deliverer, AfterKommandExecuted afterExecuted) {
-		this.bundle = bundle;
 		this.deliverer = deliverer;
 		this.afterExecuted = afterExecuted;
+		this.tag = bundle.tag;
+		this.action = bundle.action;
+		this.onError = bundle.onError;
+		this.onCompleted = bundle.onCompleted;
+		this.state = NEW;
 	}
 
 	@Override
 	public final void run() {
-		if (isCanceled) return;
+		synchronized (this) {
+			if (state == CANCELED) return;
+			executor = Thread.currentThread();
+			state = RUNNING;
+		}
 		try {
-			Action<T> action = bundle.action;
 			T result = action.kommandAction();
 			deliverResponse(result);
 		} catch (Throwable e) {
 			deliverError(e);
+		} finally {
+			synchronized (this) {
+				executor = null;
+			}
 		}
-	}
-
-	String getTag() {
-		return bundle.tag;
 	}
 
 	private void deliverResponse(final T response) {
@@ -34,10 +49,9 @@ class RunnableKommand<T> implements Runnable {
 			@Override
 			public void run() {
 				synchronized (RunnableKommand.this) {
-					if (isCanceled) return;
-					Response.OnCompleted<T> onCompleted = bundle.onCompleted;
+					if (state == CANCELED) return;
 					if (onCompleted != null) onCompleted.onCompleted(response);
-					notifyAfterExecuted();
+					afterExecuted();
 				}
 			}
 		});
@@ -48,21 +62,26 @@ class RunnableKommand<T> implements Runnable {
 			@Override
 			public void run() {
 				synchronized (RunnableKommand.this) {
-					if (isCanceled) return;
-					Response.OnError onError = bundle.onError;
+					if (state == CANCELED) return;
 					if (onError != null) onError.onError(e);
-					notifyAfterExecuted();
+					afterExecuted();
 				}
 			}
 		});
 	}
 
-	private void notifyAfterExecuted() {
+	private void afterExecuted() {
+		state = COMPLETED;
 		afterExecuted.onKommandExecuted(this);
 	}
 
 	synchronized void cancel() {
-		isCanceled = true;
+		if (state == NEW || state == RUNNING) {
+			if (executor != null) executor.interrupt();
+			onCompleted = null;
+			onError = null;
+			state = CANCELED;
+		}
 	}
 
 }
