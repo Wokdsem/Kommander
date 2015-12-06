@@ -1,4 +1,4 @@
-package com.wokdsem.android.kommander;
+package com.wokdsem.kommander;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;

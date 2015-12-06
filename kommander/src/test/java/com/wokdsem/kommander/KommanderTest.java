@@ -1,4 +1,4 @@
-package com.wokdsem.android.kommander;
+package com.wokdsem.kommander;
 
 import org.junit.Test;
 
@@ -10,7 +10,7 @@ public class KommanderTest {
 	public void publicMethods() throws Exception {
 		Class<Kommander> kClass = Kommander.class;
 		assertNotNull(kClass.getMethod("getInstance", KommandDeliverer.class));
-		assertNotNull(kClass.getMethod("getInstance", KommanderConfiguration.class));
+		assertNotNull(kClass.getMethod("getInstance", KommanderConfig.class));
 		assertNotNull(kClass.getMethod("makeKommand", Action.class));
 		assertNotNull(kClass.getMethod("cancelKommands", String.class));
 	}

@@ -1,10 +1,10 @@
-package com.wokdsem.android.kommander;
+package com.wokdsem.kommander;
 
-import static com.wokdsem.android.kommander.RunnableState.*;
+import static com.wokdsem.kommander.RunnableState.*;
 
 class RunnableKommand<T> implements Runnable {
 
-	public final String tag;
+	public final KommandTag tag;
 
 	private final Action<T> action;
 	private final KommandDeliverer deliverer;
@@ -15,11 +15,11 @@ class RunnableKommand<T> implements Runnable {
 	private Response.OnError onError;
 	private Response.OnCompleted<T> onCompleted;
 
-	public RunnableKommand(KommandBundle<T> bundle, KommandDeliverer deliverer, AfterKommandExecuted afterExecuted) {
-		this.deliverer = deliverer;
-		this.afterExecuted = afterExecuted;
-		this.tag = bundle.tag;
+	public RunnableKommand(KommandBundle<T> bundle, AfterKommandExecuted afterExecuted) {
+		this.tag = bundle.getKommandTag();
 		this.action = bundle.action;
+		this.deliverer = bundle.deliverer;
+		this.afterExecuted = afterExecuted;
 		this.onError = bundle.onError;
 		this.onCompleted = bundle.onCompleted;
 		this.state = NEW;

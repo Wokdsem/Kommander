@@ -1,4 +1,4 @@
-package com.wokdsem.android.kommander;
+package com.wokdsem.kommander;
 
 public interface KommandDeliverer {
 

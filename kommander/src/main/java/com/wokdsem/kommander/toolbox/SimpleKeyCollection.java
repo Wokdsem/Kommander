@@ -1,4 +1,4 @@
-package com.wokdsem.android.kommander.toolbox;
+package com.wokdsem.kommander.toolbox;
 
 import java.util.Collection;
 import java.util.Collections;

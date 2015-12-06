@@ -1,24 +1,22 @@
-package com.wokdsem.android.kommander;
+package com.wokdsem.kommander;
 
-import com.wokdsem.android.kommander.toolbox.SimpleKeyCollection;
+import com.wokdsem.kommander.toolbox.SimpleKeyCollection;
 
 import java.util.Collection;
 
 class KommandEngine {
 
 	private final KommandExecutor executor;
-	private final KommandDeliverer deliverer;
 	private final AfterKommandExecuted afterExecuted;
-	private final SimpleKeyCollection<String, RunnableKommand> currentRunnableKommands;
+	private final SimpleKeyCollection<KommandTag, RunnableKommand> currentRunnableKommands;
 
-	public KommandEngine(KommanderConfiguration configuration) {
+	public KommandEngine(KommanderConfig configuration) {
 		this.executor = getExecutor(configuration);
-		this.deliverer = configuration.deliverer;
 		this.afterExecuted = getAfterKommandExecuted();
 		currentRunnableKommands = new SimpleKeyCollection<>();
 	}
 
-	private KommandExecutor getExecutor(KommanderConfiguration configuration) {
+	private KommandExecutor getExecutor(KommanderConfig configuration) {
 		int poolSize = configuration.poolSize;
 		int maxPoolSize = configuration.maxPoolSize;
 		long msKeepAlive = configuration.msKeepAlive;
@@ -37,21 +35,21 @@ class KommandEngine {
 	}
 
 	public <T> void executeKommand(KommandBundle<T> bundle) {
-		RunnableKommand<T> rKommand = new RunnableKommand<>(bundle, deliverer, afterExecuted);
+		RunnableKommand<T> rKommand = new RunnableKommand<>(bundle, afterExecuted);
 		synchronized (currentRunnableKommands) {
 			currentRunnableKommands.put(rKommand.tag, rKommand);
 		}
 		executor.execute(rKommand);
 	}
 
-	public void cancelKommands(String tag) {
+	public void cancelKommands(KommandTag tag) {
 		if (tag == null) return;
 		for (RunnableKommand runnableKommand : removeCollection(tag)) {
 			runnableKommand.cancel();
 		}
 	}
 
-	private Collection<RunnableKommand> removeCollection(String key) {
+	private Collection<RunnableKommand> removeCollection(KommandTag key) {
 		synchronized (currentRunnableKommands) {
 			return currentRunnableKommands.removeAll(key);
 		}
