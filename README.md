@@ -17,7 +17,7 @@ checking <a href="https://bintray.com/wokdsem/maven/kommander/view">here</a>.
 
 ```xml
 <dependency>
-	<groupId>com.wokdsem.android</groupId>
+	<groupId>com.wokdsem.kommander</groupId>
 	<artifactId>kommander</artifactId>
 	<version>0.9.0</version>
 </dependency>
@@ -26,7 +26,7 @@ checking <a href="https://bintray.com/wokdsem/maven/kommander/view">here</a>.
 **Gradle:**
 
 ```groovy
-compile 'com.wokdsem.android:kommander:0.9.0'
+compile 'com.wokdsem.kommander:kommander:0.9.9'
 ```
 
 ##License
