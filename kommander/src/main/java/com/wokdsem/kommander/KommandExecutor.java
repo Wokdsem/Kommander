@@ -19,7 +19,7 @@ final class KommandExecutor extends ThreadPoolExecutor {
 
 			@SuppressWarnings("NullableProblems")
 			public Thread newThread(Runnable r) {
-				return new Thread(r, "CommandPoolExecutor #" + threadCount.getAndIncrement());
+				return new Thread(r, "KommandExecutor #" + threadCount.getAndIncrement());
 			}
 		};
 	}
