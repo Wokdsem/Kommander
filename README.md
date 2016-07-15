@@ -19,7 +19,7 @@ checking <a href="https://bintray.com/wokdsem/maven/kommander/view">here</a>.
 <dependency>
 	<groupId>com.wokdsem.kommander</groupId>
 	<artifactId>kommander</artifactId>
-	<version>0.9.0</version>
+	<version>0.9.9</version>
 </dependency>
 ```
 
@@ -31,7 +31,7 @@ compile 'com.wokdsem.kommander:kommander:0.9.9'
 
 ##License
 
-	Copyright 2015 Wokdsem
+	Copyright 2016 Wokdsem
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

@@ -43,9 +43,10 @@ class KommandEngine {
 	}
 
 	public void cancelKommands(KommandTag tag) {
-		if (tag == null) return;
-		for (RunnableKommand runnableKommand : removeCollection(tag)) {
-			runnableKommand.cancel();
+		if (tag != null) {
+			for (RunnableKommand runnableKommand : removeCollection(tag)) {
+				runnableKommand.cancel();
+			}
 		}
 	}
 

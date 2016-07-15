@@ -25,11 +25,13 @@ public class Kommander {
 	}
 
 	public void cancelKommands(String tag) {
-		engine.cancelKommands(getKommandTag(tag));
+		KommandTag kommandTag = getKommandTag(tag);
+		engine.cancelKommands(kommandTag);
 	}
 
 	private KommandTag getKommandTag(String tag) {
-		return tag == null ? null : new KommandTag(kommanderId, tag);
+		return tag == null ?
+				null : new KommandTag(kommanderId, tag);
 	}
 
 }

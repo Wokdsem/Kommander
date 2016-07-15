@@ -23,17 +23,17 @@ public class KommanderConfig {
 		private int maxPoolSize = DEFAULT_MAXIMUM_CORE_POOL_SIZE;
 		private long msKeepAlive = DEFAULT_MS_KEEP_ALIVE;
 
-		public Builder setPoolSize(int poolSize) {
+		public Builder poolSize(int poolSize) {
 			this.poolSize = poolSize;
 			return this;
 		}
 
-		public Builder setMaxPoolSize(int maxPoolSize) {
+		public Builder maxPoolSize(int maxPoolSize) {
 			this.maxPoolSize = maxPoolSize;
 			return this;
 		}
 
-		public Builder setMsKeepAlive(long msKeepAlive) {
+		public Builder msKeepAlive(long msKeepAlive) {
 			this.msKeepAlive = msKeepAlive;
 			return this;
 		}
