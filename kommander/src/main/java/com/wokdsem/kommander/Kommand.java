@@ -1,13 +1,13 @@
-package com.wokdsem.android.kommander;
+package com.wokdsem.kommander;
 
 public class Kommand<T> {
 
 	private final KommandBundle<T> bundle;
-	private final KommandEngine engine;
+	private final ExecutorDelegate delegate;
 
-	Kommand(Action<T> action, KommandEngine engine){
-		this.bundle = new KommandBundle<>(action);
-		this.engine = engine;
+	Kommand(KommandBundle<T> bundle, ExecutorDelegate delegate) {
+		this.bundle = bundle;
+		this.delegate = delegate;
 	}
 
 	public Kommand<T> setOnCompleted(Response.OnCompleted<T> onCompleted) {
@@ -26,7 +26,13 @@ public class Kommand<T> {
 	}
 
 	public void kommand() {
-		engine.executeKommand(bundle);
+		delegate.execute(bundle);
+	}
+
+	interface ExecutorDelegate {
+
+		void execute(KommandBundle bundle);
+
 	}
 
 }

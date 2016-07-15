@@ -1,4 +1,4 @@
-package com.wokdsem.android.kommander;
+package com.wokdsem.kommander;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -19,7 +19,7 @@ final class KommandExecutor extends ThreadPoolExecutor {
 
 			@SuppressWarnings("NullableProblems")
 			public Thread newThread(Runnable r) {
-				return new Thread(r, "CommandPoolExecutor #" + threadCount.getAndIncrement());
+				return new Thread(r, "KommandExecutor #" + threadCount.getAndIncrement());
 			}
 		};
 	}

@@ -1,4 +1,4 @@
-package com.wokdsem.android.kommander.toolbox;
+package com.wokdsem.kommander.toolbox;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -38,7 +38,9 @@ public class SimpleKeyCollection<K, T> {
 		Set<T> set = map.get(key);
 		if (set != null) {
 			set.remove(value);
-			if (set.isEmpty()) map.remove(key);
+			if (set.isEmpty()) {
+				map.remove(key);
+			}
 		}
 	}
 
