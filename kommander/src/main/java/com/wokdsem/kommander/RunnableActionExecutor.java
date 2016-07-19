@@ -7,7 +7,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-final class KommandExecutor extends ThreadPoolExecutor {
+final class RunnableActionExecutor extends ThreadPoolExecutor {
 
 	private static BlockingQueue<Runnable> buildBlockingQueue() {
 		return new LinkedBlockingQueue<>();
@@ -19,13 +19,13 @@ final class KommandExecutor extends ThreadPoolExecutor {
 
 			@SuppressWarnings("NullableProblems")
 			public Thread newThread(Runnable r) {
-				return new Thread(r, "KommandExecutor #" + threadCount.getAndIncrement());
+				return new Thread(r, "Kommander-ThreadExecutor #" + threadCount.getAndIncrement());
 			}
 		};
 	}
 
-	public KommandExecutor(int corePoolSize, int maxCorePoolSize, long msKeepAlive) {
-		super(corePoolSize, maxCorePoolSize, msKeepAlive, TimeUnit.MILLISECONDS, buildBlockingQueue(), buildThreadFactory());
+	public RunnableActionExecutor(int corePoolSize) {
+		super(corePoolSize, corePoolSize, 0, TimeUnit.MILLISECONDS, buildBlockingQueue(), buildThreadFactory());
 	}
 
 }

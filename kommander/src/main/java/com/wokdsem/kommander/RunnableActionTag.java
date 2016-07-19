@@ -1,21 +1,21 @@
 package com.wokdsem.kommander;
 
-class KommandTag {
+class RunnableActionTag {
 
-	public final long kommanderId;
-	public final String kommandTag;
+	private final long superId;
+	private final String kommandTag;
 
-	KommandTag(long kommanderId, String kommandTag) {
-		this.kommanderId = kommanderId;
+	RunnableActionTag(long superId, String kommandTag) {
+		this.superId = superId;
 		this.kommandTag = kommandTag;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
-		if (obj instanceof KommandTag) {
-			KommandTag o = (KommandTag) obj;
-			if (kommanderId == o.kommanderId) {
+		if (obj instanceof RunnableActionTag) {
+			RunnableActionTag o = (RunnableActionTag) obj;
+			if (superId == o.superId) {
 				return kommandTag == null ?
 						o.kommandTag == null : kommandTag.equals(o.kommandTag);
 			}
@@ -25,7 +25,7 @@ class KommandTag {
 
 	@Override
 	public int hashCode() {
-		int result = (int) (kommanderId ^ (kommanderId >>> 32));
+		int result = (int) (superId ^ (superId >>> 32));
 		result = 31 * result + (kommandTag != null ? kommandTag.hashCode() : 0);
 		return result;
 	}

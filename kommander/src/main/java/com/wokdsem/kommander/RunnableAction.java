@@ -1,6 +1,6 @@
 package com.wokdsem.kommander;
 
-class RunnableKommand<T> implements Runnable {
+class RunnableAction<T> implements Runnable {
 
 	private enum RunnableState {
 		NEW,
@@ -9,9 +9,9 @@ class RunnableKommand<T> implements Runnable {
 		CANCELED
 	}
 
-	public final KommandTag tag;
-	private final KommandDeliverer deliverer;
-	private final AfterKommandExecuted afterExecuted;
+	public final RunnableActionTag tag;
+	private final Deliverer deliverer;
+	private final AfterActionExecuted afterExecuted;
 
 	private Thread executor;
 	private RunnableState state;
@@ -19,8 +19,8 @@ class RunnableKommand<T> implements Runnable {
 	private Response.OnError onError;
 	private Response.OnCompleted<T> onCompleted;
 
-	public RunnableKommand(KommandBundle<T> bundle, AfterKommandExecuted afterExecuted) {
-		this.tag = bundle.getKommandTag();
+	public RunnableAction(ActionBundle<T> bundle, AfterActionExecuted afterExecuted) {
+		this.tag = bundle.runnableActionTag;
 		this.deliverer = bundle.deliverer;
 		this.afterExecuted = afterExecuted;
 		this.action = bundle.action;
@@ -33,7 +33,7 @@ class RunnableKommand<T> implements Runnable {
 	public final void run() {
 		Action<T> runnableAction;
 		synchronized (this) {
-			if (state == RunnableState.CANCELED) {
+			if (state != RunnableState.NEW) {
 				return;
 			}
 			runnableAction = action;
@@ -57,10 +57,12 @@ class RunnableKommand<T> implements Runnable {
 		deliverer.deliver(new Runnable() {
 			@Override
 			public void run() {
-				synchronized (RunnableKommand.this) {
+				synchronized (RunnableAction.this) {
 					if (state != RunnableState.CANCELED) {
+						onError = null;
 						if (onCompleted != null) {
 							onCompleted.onCompleted(response);
+							onCompleted = null;
 						}
 						afterExecuted();
 					}
@@ -73,10 +75,12 @@ class RunnableKommand<T> implements Runnable {
 		deliverer.deliver(new Runnable() {
 			@Override
 			public void run() {
-				synchronized (RunnableKommand.this) {
+				synchronized (RunnableAction.this) {
 					if (state != RunnableState.CANCELED) {
+						onCompleted = null;
 						if (onError != null) {
 							onError.onError(e);
+							onError = null;
 						}
 						afterExecuted();
 					}
@@ -87,7 +91,7 @@ class RunnableKommand<T> implements Runnable {
 
 	private void afterExecuted() {
 		state = RunnableState.COMPLETED;
-		afterExecuted.onKommandExecuted(this);
+		afterExecuted.onActionExecuted(this);
 	}
 
 	synchronized void cancel() {
