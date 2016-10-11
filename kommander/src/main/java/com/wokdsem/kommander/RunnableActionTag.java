@@ -12,12 +12,13 @@ class RunnableActionTag {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) return true;
+		if (this == obj) {
+			return true;
+		}
 		if (obj instanceof RunnableActionTag) {
 			RunnableActionTag o = (RunnableActionTag) obj;
 			if (superId == o.superId) {
-				return kommandTag == null ?
-						o.kommandTag == null : kommandTag.equals(o.kommandTag);
+				return kommandTag == null ? o.kommandTag == null : kommandTag.equals(o.kommandTag);
 			}
 		}
 		return false;

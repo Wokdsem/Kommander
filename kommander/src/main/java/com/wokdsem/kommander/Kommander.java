@@ -29,8 +29,7 @@ public class Kommander {
 	}
 
 	private RunnableActionTag getKommandTag(String tag) {
-		return tag == null ?
-				null : new RunnableActionTag(kommanderId, tag);
+		return tag == null ? null : new RunnableActionTag(kommanderId, tag);
 	}
 
 }

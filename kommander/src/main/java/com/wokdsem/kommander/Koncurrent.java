@@ -1,10 +1,8 @@
 package com.wokdsem.kommander;
 
 import com.wokdsem.kommander.toolbox.CountDownLock;
-
 import java.util.LinkedList;
 import java.util.Locale;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class Koncurrent {
@@ -30,7 +28,7 @@ public class Koncurrent {
 		this.koncurrentId = koncurrentId;
 	}
 
-	@SuppressWarnings({"unchecked"})
+	@SuppressWarnings({ "unchecked" })
 	public MultipleResults kommand(Action<?>... actions) throws KoncurrentException {
 		int actionsLength = actions.length;
 		Object[] responses = new Object[actionsLength];
@@ -40,20 +38,18 @@ public class Koncurrent {
 		KoncurrentError koncurrentError = new KoncurrentError(lock, actionTag);
 		Response.OnError onErrorResponse = new OnErrorResponse(koncurrentError);
 		LinkedList<Runnable> runnableActions = new LinkedList<>();
-
 		for (int i = 0; i < actionsLength; i++) {
 			Action<Object> action = (Action<Object>) actions[i];
-			ActionBundle actionBundle = new ActionBundle.Builder<>(action, DELIVERER, koncurrentId)
-					.onCompleted(new OnCompletedResponse(lock, responses, i))
-					.onError(onErrorResponse)
-					.tag(koncurrentTag)
-					.build();
+			ActionBundle.Builder<Object> builder = new ActionBundle.Builder<>(action, DELIVERER, koncurrentId);
+			ActionBundle actionBundle = builder.onCompleted(new OnCompletedResponse(lock, responses, i))
+				.onError(onErrorResponse)
+				.tag(koncurrentTag)
+				.build();
 			Runnable runnableAction = engine.executeAction(actionBundle);
 			runnableActions.add(runnableAction);
 		}
 		runActions(runnableActions);
 		waitResponses(lock, koncurrentError);
-
 		return new MultipleResults(responses);
 	}
 
@@ -71,33 +67,37 @@ public class Koncurrent {
 
 	private void waitResponses(CountDownLock lock, KoncurrentError koncurrentError) throws KoncurrentException {
 		try {
-			if (!lock.await()) {
-				koncurrentError.onError();
-				throw new KoncurrentException();
+			if (lock.await()) {
+				return;
 			}
 		} catch (InterruptedException e) {
-			koncurrentError.onError();
-			throw new KoncurrentException(e);
+			koncurrentError.onError(e);
 		}
+		Throwable cause = koncurrentError.cause;
+		throw new KoncurrentException(cause);
 	}
 
 	private class KoncurrentError {
 
 		private final CountDownLock lock;
 		private final RunnableActionTag tag;
-		private final AtomicBoolean consumed;
+		private Throwable cause;
 
 		KoncurrentError(CountDownLock lock, RunnableActionTag tag) {
 			this.lock = lock;
 			this.tag = tag;
-			this.consumed = new AtomicBoolean(false);
 		}
 
-		public void onError() {
-			if (consumed.compareAndSet(false, true)) {
-				engine.cancelKommands(tag);
-				lock.releaseLock();
+		void onError(Throwable cause) {
+			synchronized (this) {
+				if (this.cause == null) {
+					this.cause = cause;
+				} else {
+					return;
+				}
 			}
+			engine.cancelKommands(tag);
+			lock.releaseLock();
 		}
 
 	}
@@ -132,7 +132,7 @@ public class Koncurrent {
 
 		@Override
 		public void onError(Throwable e) {
-			koncurrentError.onError();
+			koncurrentError.onError(e);
 		}
 
 	}
@@ -149,7 +149,7 @@ public class Koncurrent {
 		public <T> T get(int index) {
 			if (index < 0 || index >= response.length) {
 				String err = String.format(Locale.getDefault(), "Index: %d, Size: %d", index, response.length);
-				throw new IndexOutOfBoundsException();
+				throw new IndexOutOfBoundsException(err);
 			}
 			return (T) response[index];
 		}

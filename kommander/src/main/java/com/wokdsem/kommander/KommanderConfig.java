@@ -5,7 +5,8 @@ public class KommanderConfig {
 	private static final int DEFAULT_CORE_POOL_SIZE;
 
 	static {
-		int cpuCount = Runtime.getRuntime().availableProcessors();
+		Runtime runtime = Runtime.getRuntime();
+		int cpuCount = runtime.availableProcessors();
 		DEFAULT_CORE_POOL_SIZE = Math.max(cpuCount, 2);
 	}
 
