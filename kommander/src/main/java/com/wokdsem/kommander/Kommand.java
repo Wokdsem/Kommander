@@ -2,36 +2,37 @@ package com.wokdsem.kommander;
 
 public class Kommand<T> {
 
-	private final KommandBundle<T> bundle;
+	private final ActionBundle.Builder<T> bundleBuilder;
 	private final ExecutorDelegate delegate;
 
-	Kommand(KommandBundle<T> bundle, ExecutorDelegate delegate) {
-		this.bundle = bundle;
+	Kommand(Action<T> action, Deliverer deliverer, long superId, ExecutorDelegate delegate) {
+		this.bundleBuilder = new ActionBundle.Builder<>(action, deliverer, superId);
 		this.delegate = delegate;
 	}
 
 	public Kommand<T> setOnCompleted(Response.OnCompleted<T> onCompleted) {
-		bundle.onCompleted = onCompleted;
+		bundleBuilder.onCompleted(onCompleted);
 		return this;
 	}
 
 	public Kommand<T> setOnError(Response.OnError onError) {
-		bundle.onError = onError;
+		bundleBuilder.onError(onError);
 		return this;
 	}
 
 	public Kommand<T> setTag(String tag) {
-		bundle.tag = tag;
+		bundleBuilder.tag(tag);
 		return this;
 	}
 
 	public void kommand() {
-		delegate.execute(bundle);
+		ActionBundle<T> actionBundle = bundleBuilder.build();
+		delegate.execute(actionBundle);
 	}
 
 	interface ExecutorDelegate {
 
-		void execute(KommandBundle bundle);
+		void execute(ActionBundle actionBundle);
 
 	}
 

@@ -3,35 +3,33 @@ package com.wokdsem.kommander;
 public class Kommander {
 
 	private final long kommanderId;
-	private final KommandEngine engine;
-	private final KommandDeliverer deliverer;
+	private final ActionsEngine engine;
+	private final Deliverer deliverer;
 	private final Kommand.ExecutorDelegate executorDelegate;
 
-	Kommander(long kommanderId, final KommandEngine engine, KommandDeliverer deliverer) {
+	Kommander(long kommanderId, final ActionsEngine engine, Deliverer deliverer) {
 		this.kommanderId = kommanderId;
 		this.engine = engine;
 		this.deliverer = deliverer;
 		this.executorDelegate = new Kommand.ExecutorDelegate() {
 			@Override
-			public void execute(KommandBundle bundle) {
-				engine.executeKommand(bundle);
+			public void execute(ActionBundle actionBundle) {
+				engine.executeAction(actionBundle);
 			}
 		};
 	}
 
 	public <T> Kommand<T> makeKommand(Action<T> action) {
-		KommandBundle<T> bundle = new KommandBundle<>(action, deliverer, kommanderId);
-		return new Kommand<>(bundle, executorDelegate);
+		return new Kommand<>(action, deliverer, kommanderId, executorDelegate);
 	}
 
 	public void cancelKommands(String tag) {
-		KommandTag kommandTag = getKommandTag(tag);
-		engine.cancelKommands(kommandTag);
+		RunnableActionTag runnableActionTag = getKommandTag(tag);
+		engine.cancelKommands(runnableActionTag);
 	}
 
-	private KommandTag getKommandTag(String tag) {
-		return tag == null ?
-				null : new KommandTag(kommanderId, tag);
+	private RunnableActionTag getKommandTag(String tag) {
+		return tag == null ? null : new RunnableActionTag(kommanderId, tag);
 	}
 
 }

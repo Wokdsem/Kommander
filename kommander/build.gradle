@@ -4,12 +4,11 @@ plugins {
 apply plugin: 'java'
 apply plugin: 'maven-publish'
 
-def versionName = "0.9.9"
+def versionName = "0.10.1"
 
 dependencies {
     testCompile 'junit:junit:4.12'
 }
-
 
 publishing {
     publications {

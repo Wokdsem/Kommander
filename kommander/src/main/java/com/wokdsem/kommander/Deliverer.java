@@ -1,6 +1,6 @@
 package com.wokdsem.kommander;
 
-public interface KommandDeliverer {
+public interface Deliverer {
 
 	void deliver(Runnable runnable);
 
