@@ -1,13 +1,15 @@
 package com.wokdsem.kommander;
 
+import java.lang.ref.WeakReference;
+
 public class Kommand<T> {
 
-	private final ActionBundle.Builder<T> bundleBuilder;
-	private final ExecutorDelegate delegate;
+	private final RunnableActionBundle.Builder<T> bundleBuilder;
+	private final Executor executor;
 
-	Kommand(Action<T> action, Deliverer deliverer, long superId, ExecutorDelegate delegate) {
-		this.bundleBuilder = new ActionBundle.Builder<>(action, deliverer, superId);
-		this.delegate = delegate;
+	Kommand(Action<T> action, Deliverer deliverer, Executor executor) {
+		this.bundleBuilder = new RunnableActionBundle.Builder<>(action, deliverer);
+		this.executor = executor;
 	}
 
 	public Kommand<T> setOnCompleted(Response.OnCompleted<T> onCompleted) {
@@ -20,20 +22,28 @@ public class Kommand<T> {
 		return this;
 	}
 
-	public Kommand<T> setTag(String tag) {
-		bundleBuilder.tag(tag);
-		return this;
+	public KommandToken kommand() {
+		RunnableActionBundle<T> bundle = bundleBuilder.build();
+		RunnableAction<T> runnableAction = new RunnableAction<>(bundle);
+		executor.execute(runnableAction);
+		return new WeakKommandToken(runnableAction);
 	}
 
-	public void kommand() {
-		ActionBundle<T> actionBundle = bundleBuilder.build();
-		delegate.execute(actionBundle);
-	}
+	private static class WeakKommandToken implements KommandToken {
 
-	interface ExecutorDelegate {
+		private final WeakReference<RunnableAction> actionReference;
 
-		void execute(ActionBundle actionBundle);
+		private WeakKommandToken(RunnableAction runnableAction) {
+			this.actionReference = new WeakReference<>(runnableAction);
+		}
 
+		@Override
+		public void cancel() {
+			RunnableAction runnableAction = actionReference.get();
+			if (runnableAction != null) {
+				runnableAction.cancel();
+			}
+		}
 	}
 
 }

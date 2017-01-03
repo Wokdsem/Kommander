@@ -1,11 +1,7 @@
 #Kommander
 
-![alt text](https://raw.githubusercontent.com/Wokdsem/Kommander/master/logo.png "logo")
-
 **Kommander** is a *Java library* (recommended to use in *Android*) to manage the task execution in different threads.
 Through the definition a simple but powerful concept, **Kommand**.
-
-Fore more information please see <a href="http://wokdsem.github.io/Kommander">the website</a>
 
 ##Download
 
@@ -19,14 +15,14 @@ checking <a href="https://bintray.com/wokdsem/maven/kommander/view">here</a>.
 <dependency>
 	<groupId>com.wokdsem.kommander</groupId>
 	<artifactId>kommander</artifactId>
-	<version>0.9.9</version>
+	<version>1.0.0</version>
 </dependency>
 ```
 
 **Gradle:**
 
 ```groovy
-compile 'com.wokdsem.kommander:kommander:0.9.9'
+compile 'com.wokdsem.kommander:kommander:1.0.0'
 ```
 
 ##License
