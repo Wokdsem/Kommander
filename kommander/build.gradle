@@ -1,49 +1,51 @@
 plugins {
-    id "com.jfrog.bintray" version "1.4"
+	id "com.jfrog.bintray" version "1.7.3"
 }
 apply plugin: 'java'
 apply plugin: 'maven-publish'
 
 def versionName = "1.0.0"
 
+sourceCompatibility = 1.7
+
 dependencies {
-    testCompile 'junit:junit:4.12'
+	testCompile 'junit:junit:4.12'
 }
 
 publishing {
-    publications {
-        KPublication(MavenPublication) {
-            artifacts {
-                groupId 'com.wokdsem.kommander'
-                artifactId 'kommander'
-                version versionName
-                from components.java
-                artifact sourcesJar
-            }
-        }
-    }
+	publications {
+		KPublication(MavenPublication) {
+			artifacts {
+				groupId 'com.wokdsem.kommander'
+				artifactId 'kommander'
+				version versionName
+				from components.java
+				artifact sourcesJar
+			}
+		}
+	}
 }
 
 task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
+	classifier = 'sources'
+	from sourceSets.main.allSource
 }
 
 bintray {
-    user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
-    key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
-    publications = ['KPublication']
-    pkg {
-        repo = 'maven'
-        name = 'kommander'
-        desc = 'Java library (recommended to use in Android) to manage the task execution in different threads.'
-        labels = ['java', 'android']
-        licenses = ['Apache-2.0']
-        websiteUrl = 'http://wokdsem.github.io/Kommander/'
-        vcsUrl = 'https://github.com/Wokdsem/Kommander'
-        issueTrackerUrl = 'https://github.com/Wokdsem/Kommander/issues'
-        version {
-            name = versionName + '-Release'
-        }
-    }
+	user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
+	key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
+	publications = ['KPublication']
+	pkg {
+		repo = 'maven'
+		name = 'kommander'
+		desc = 'Java library (recommended to use in Android) to manage the task execution in different threads.'
+		labels = ['java', 'android']
+		licenses = ['Apache-2.0']
+		websiteUrl = 'http://wokdsem.github.io/Kommander/'
+		vcsUrl = 'https://github.com/Wokdsem/Kommander'
+		issueTrackerUrl = 'https://github.com/Wokdsem/Kommander/issues'
+		version {
+			name = versionName + '-Release'
+		}
+	}
 }
