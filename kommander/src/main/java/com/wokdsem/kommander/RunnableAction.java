@@ -9,20 +9,15 @@ class RunnableAction<T> implements Runnable {
 		CANCELED
 	}
 
-	public final RunnableActionTag tag;
 	private final Deliverer deliverer;
-	private final AfterActionExecuted afterExecuted;
-
 	private Thread executor;
 	private RunnableState state;
 	private Action<T> action;
 	private Response.OnError onError;
 	private Response.OnCompleted<T> onCompleted;
 
-	public RunnableAction(ActionBundle<T> bundle, AfterActionExecuted afterExecuted) {
-		this.tag = bundle.runnableActionTag;
+	RunnableAction(RunnableActionBundle<T> bundle) {
 		this.deliverer = bundle.deliverer;
-		this.afterExecuted = afterExecuted;
 		this.action = bundle.action;
 		this.onError = bundle.onError;
 		this.onCompleted = bundle.onCompleted;
@@ -41,7 +36,7 @@ class RunnableAction<T> implements Runnable {
 			state = RunnableState.RUNNING;
 		}
 		try {
-			T result = runnableAction.kommandAction();
+			T result = runnableAction.act();
 			deliverResponse(result);
 		} catch (Throwable e) {
 			deliverError(e);
@@ -91,7 +86,6 @@ class RunnableAction<T> implements Runnable {
 
 	private void afterExecuted() {
 		state = RunnableState.COMPLETED;
-		afterExecuted.onActionExecuted(this);
 	}
 
 	synchronized void cancel() {
