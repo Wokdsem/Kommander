@@ -36,7 +36,7 @@ class RunnableAction<T> implements Runnable {
 			state = RunnableState.RUNNING;
 		}
 		try {
-			T result = runnableAction.act();
+			T result = runnableAction.action();
 			deliverResponse(result);
 		} catch (Throwable e) {
 			deliverError(e);

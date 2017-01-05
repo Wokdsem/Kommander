@@ -34,7 +34,7 @@ public class KommanderTest {
 		Kommander kommander = Kommander.getInstance(getDefaultDeliverer(), 2);
 		kommander.makeKommand(new Action<Void>() {
 			@Override
-			public Void act() throws Throwable {
+			public Void action() throws Throwable {
 				latch.countDown();
 				return null;
 			}
