@@ -24,7 +24,7 @@ public class KommandTest {
 		final CountDownLatch latch = new CountDownLatch(1);
 		Kommand<Integer> kommand = new Kommand<>(new Action<Integer>() {
 			@Override
-			public Integer act() throws Throwable {
+			public Integer action() throws Throwable {
 				return valueAction;
 			}
 		}, deliverer, executor).setOnCompleted(new Response.OnCompleted<Integer>() {
@@ -43,7 +43,7 @@ public class KommandTest {
 		final CountDownLatch latch = new CountDownLatch(1);
 		Kommand<Void> kommand = new Kommand<>(new Action<Void>() {
 			@Override
-			public Void act() throws Throwable {
+			public Void action() throws Throwable {
 				throw new NullPointerException();
 			}
 		}, deliverer, executor).setOnError(new Response.OnError() {
@@ -63,7 +63,7 @@ public class KommandTest {
 		final CountDownLatch outputLatch = new CountDownLatch(1);
 		Kommand<Void> kommand = new Kommand<>(new Action<Void>() {
 			@Override
-			public synchronized Void act() throws Throwable {
+			public synchronized Void action() throws Throwable {
 				try {
 					inputLatch.countDown();
 					wait();

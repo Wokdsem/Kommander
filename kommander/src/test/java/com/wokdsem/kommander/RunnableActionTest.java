@@ -17,7 +17,7 @@ public class RunnableActionTest {
 		final int value = 5;
 		RunnableActionBundle.Builder<Integer> builder = new RunnableActionBundle.Builder<>(new Action<Integer>() {
 			@Override
-			public Integer act() throws Throwable {
+			public Integer action() throws Throwable {
 				return value;
 			}
 		}, getDefaultDeliverer()).onCompleted(new Response.OnCompleted<Integer>() {
@@ -34,7 +34,7 @@ public class RunnableActionTest {
 		final NullPointerException npe = new NullPointerException();
 		RunnableActionBundle.Builder<Void> builder = new RunnableActionBundle.Builder<Void>(new Action<Void>() {
 			@Override
-			public Void act() throws Throwable {
+			public Void action() throws Throwable {
 				throw npe;
 			}
 		}, getDefaultDeliverer()).onError(new Response.OnError() {
@@ -50,7 +50,7 @@ public class RunnableActionTest {
 	public void run_tryToRunOnCancelledState_listenerIsNotCalled() {
 		RunnableActionBundle.Builder<Void> builder = new RunnableActionBundle.Builder<>(new Action<Void>() {
 			@Override
-			public Void act() throws Throwable {
+			public Void action() throws Throwable {
 				throw new IllegalStateException();
 			}
 		}, getDefaultDeliverer());
@@ -64,7 +64,7 @@ public class RunnableActionTest {
 		final CountDownLatch inputLatch = new CountDownLatch(1);
 		RunnableActionBundle.Builder<Void> builder = new RunnableActionBundle.Builder<>(new Action<Void>() {
 			@Override
-			public synchronized Void act() throws Throwable {
+			public synchronized Void action() throws Throwable {
 				inputLatch.countDown();
 				wait();
 				return null;
