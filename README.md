@@ -15,19 +15,19 @@ checking <a href="https://bintray.com/wokdsem/maven/kommander/view">here</a>.
 <dependency>
 	<groupId>com.wokdsem.kommander</groupId>
 	<artifactId>kommander</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 </dependency>
 ```
 
 **Gradle:**
 
 ```groovy
-compile 'com.wokdsem.kommander:kommander:1.0.0'
+compile 'com.wokdsem.kommander:kommander:1.0.1'
 ```
 
 ##License
 
-	Copyright 2016 Wokdsem
+	Copyright 2017 Wokdsem
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
