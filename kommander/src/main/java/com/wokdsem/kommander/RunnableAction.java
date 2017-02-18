@@ -9,18 +9,20 @@ class RunnableAction<T> implements Runnable {
 		CANCELED
 	}
 
-	private final Deliverer deliverer;
-	private Thread executor;
-	private RunnableState state;
 	private Action<T> action;
-	private Response.OnError onError;
+	private Deliverer deliverer;
 	private Response.OnCompleted<T> onCompleted;
+	private Response.OnError onError;
+	private RunnableState state;
+	private Thread executor;
+	private Throwable error;
+	private T result;
 
 	RunnableAction(RunnableActionBundle<T> bundle) {
-		this.deliverer = bundle.deliverer;
 		this.action = bundle.action;
-		this.onError = bundle.onError;
+		this.deliverer = bundle.deliverer;
 		this.onCompleted = bundle.onCompleted;
+		this.onError = bundle.onError;
 		this.state = RunnableState.NEW;
 	}
 
@@ -37,55 +39,64 @@ class RunnableAction<T> implements Runnable {
 		}
 		try {
 			T result = runnableAction.action();
-			deliverResponse(result);
+			onResult(result);
 		} catch (Throwable e) {
-			deliverError(e);
+			onError(e);
 		} finally {
 			synchronized (this) {
 				action = null;
+				deliverer = null;
 				executor = null;
 			}
 		}
 	}
 
-	private void deliverResponse(final T response) {
-		deliverer.deliver(new Runnable() {
-			@Override
-			public void run() {
-				synchronized (RunnableAction.this) {
-					if (state != RunnableState.CANCELED) {
-						onError = null;
-						if (onCompleted != null) {
-							onCompleted.onCompleted(response);
-							onCompleted = null;
-						}
-						afterExecuted();
+	private synchronized void onResult(T result) {
+		if (state != RunnableState.CANCELED) {
+			if (onCompleted != null) {
+				this.result = result;
+				onError = null;
+				deliverer.deliver(new Runnable() {
+					@Override
+					public void run() {
+						deliverResult();
 					}
-				}
+				});
+			} else {
+				release(true);
 			}
-		});
+		}
 	}
 
-	private void deliverError(final Throwable e) {
-		deliverer.deliver(new Runnable() {
-			@Override
-			public void run() {
-				synchronized (RunnableAction.this) {
-					if (state != RunnableState.CANCELED) {
-						onCompleted = null;
-						if (onError != null) {
-							onError.onError(e);
-							onError = null;
-						}
-						afterExecuted();
-					}
-				}
-			}
-		});
+	private synchronized void deliverResult() {
+		if (state != RunnableState.CANCELED) {
+			onCompleted.onCompleted(result);
+			release(true);
+		}
 	}
 
-	private void afterExecuted() {
-		state = RunnableState.COMPLETED;
+	private synchronized void onError(Throwable error) {
+		if (state != RunnableState.CANCELED) {
+			if (onError != null) {
+				this.error = error;
+				onCompleted = null;
+				deliverer.deliver(new Runnable() {
+					@Override
+					public void run() {
+						deliverError();
+					}
+				});
+			} else {
+				release(true);
+			}
+		}
+	}
+
+	private synchronized void deliverError() {
+		if (state != RunnableState.CANCELED) {
+			onError.onError(error);
+			release(true);
+		}
 	}
 
 	synchronized void cancel() {
@@ -94,10 +105,17 @@ class RunnableAction<T> implements Runnable {
 				executor.interrupt();
 			}
 			action = null;
-			onCompleted = null;
-			onError = null;
-			state = RunnableState.CANCELED;
+			deliverer = null;
+			release(false);
 		}
+	}
+
+	private void release(boolean isFullyCompleted) {
+		this.state = isFullyCompleted ? RunnableState.COMPLETED : RunnableState.CANCELED;
+		onCompleted = null;
+		onError = null;
+		result = null;
+		error = null;
 	}
 
 }

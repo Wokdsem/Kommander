@@ -39,7 +39,7 @@ public class KommanderTest {
 				return null;
 			}
 		}).kommand();
-		boolean countReleased = latch.await(1_000, TimeUnit.MICROSECONDS);
+		boolean countReleased = latch.await(1_000, TimeUnit.MILLISECONDS);
 		assertThat(countReleased, is(true));
 	}
 

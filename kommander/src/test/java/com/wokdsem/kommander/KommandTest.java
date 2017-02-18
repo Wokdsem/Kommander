@@ -53,7 +53,7 @@ public class KommandTest {
 			}
 		});
 		kommand.kommand();
-		boolean released = latch.await(1_000, TimeUnit.MICROSECONDS);
+		boolean released = latch.await(1_000, TimeUnit.MILLISECONDS);
 		assertThat(released, is(true));
 	}
 
@@ -76,7 +76,7 @@ public class KommandTest {
 		KommandToken token = kommand.kommand();
 		inputLatch.await();
 		token.cancel();
-		boolean released = outputLatch.await(1_000, TimeUnit.MICROSECONDS);
+		boolean released = outputLatch.await(1_000, TimeUnit.MILLISECONDS);
 		assertThat(released, is(true));
 	}
 
