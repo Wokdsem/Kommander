@@ -80,4 +80,53 @@ public class KommandTest {
 		assertThat(released, is(true));
 	}
 
+	@Test
+	public void kommandWithTokenBox_cancelAll_kommandIsCancelled() throws InterruptedException {
+		KommandTokenBox tokenBox = new KommandTokenBox();
+		final CountDownLatch inputLatch = new CountDownLatch(1);
+		final CountDownLatch outputLatch = new CountDownLatch(1);
+		Kommand<Void> kommand = new Kommand<>(new Action<Void>() {
+			@Override
+			public synchronized Void action() throws Throwable {
+				try {
+					inputLatch.countDown();
+					wait();
+				} catch (InterruptedException e) {
+					outputLatch.countDown();
+				}
+				return null;
+			}
+		}, deliverer, executor);
+		kommand.kommand(tokenBox);
+		inputLatch.await();
+		tokenBox.cancelAll();
+		boolean released = outputLatch.await(1_000, TimeUnit.MILLISECONDS);
+		assertThat(released, is(true));
+	}
+
+	@Test
+	public void kommandWithTokenBoxTagged_cancelWithTag_kommandIsCancelled() throws InterruptedException {
+		String tag = "TAG";
+		KommandTokenBox tokenBox = new KommandTokenBox();
+		final CountDownLatch inputLatch = new CountDownLatch(1);
+		final CountDownLatch outputLatch = new CountDownLatch(1);
+		Kommand<Void> kommand = new Kommand<>(new Action<Void>() {
+			@Override
+			public synchronized Void action() throws Throwable {
+				try {
+					inputLatch.countDown();
+					wait();
+				} catch (InterruptedException e) {
+					outputLatch.countDown();
+				}
+				return null;
+			}
+		}, deliverer, executor);
+		kommand.kommand(tokenBox, tag);
+		inputLatch.await();
+		tokenBox.cancel(tag);
+		boolean released = outputLatch.await(1_000, TimeUnit.MILLISECONDS);
+		assertThat(released, is(true));
+	}
+
 }
