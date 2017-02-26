@@ -15,14 +15,14 @@ checking <a href="https://bintray.com/wokdsem/maven/kommander/view">here</a>.
 <dependency>
 	<groupId>com.wokdsem.kommander</groupId>
 	<artifactId>kommander</artifactId>
-	<version>1.0.1</version>
+	<version>1.1.0</version>
 </dependency>
 ```
 
 **Gradle:**
 
 ```groovy
-compile 'com.wokdsem.kommander:kommander:1.0.1'
+compile 'com.wokdsem.kommander:kommander:1.1.0'
 ```
 
 ##License
