@@ -11,7 +11,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 public class RunnableActionTest {
-
+	
 	@Test
 	public void run_normalExecutor_onResultCalled() {
 		final int value = 5;
@@ -20,32 +20,32 @@ public class RunnableActionTest {
 			public Integer action() throws Throwable {
 				return value;
 			}
-		}, getDefaultDeliverer()).onCompleted(new Response.OnCompleted<Integer>() {
+		}).onCompleted(new Response.OnCompleted<Integer>() {
 			@Override
 			public void onCompleted(Integer response) {
 				assertThat(response, is(value));
 			}
 		});
-		new RunnableAction<>(builder.build()).run();
+		new RunnableAction<>(builder.build(), getDefaultDeliverer()).run();
 	}
-
+	
 	@Test
 	public void run_onActionThrowAnException_onErrorCalled() {
 		final NullPointerException npe = new NullPointerException();
-		RunnableActionBundle.Builder<Void> builder = new RunnableActionBundle.Builder<Void>(new Action<Void>() {
+		RunnableActionBundle.Builder<Void> builder = new RunnableActionBundle.Builder<>(new Action<Void>() {
 			@Override
 			public Void action() throws Throwable {
 				throw npe;
 			}
-		}, getDefaultDeliverer()).onError(new Response.OnError() {
+		}).onError(new Response.OnError() {
 			@Override
 			public void onError(Throwable e) {
 				Assert.assertEquals(e, npe);
 			}
 		});
-		new RunnableAction<>(builder.build()).run();
+		new RunnableAction<>(builder.build(), getDefaultDeliverer()).run();
 	}
-
+	
 	@Test
 	public void run_tryToRunOnCancelledState_listenerIsNotCalled() {
 		RunnableActionBundle.Builder<Void> builder = new RunnableActionBundle.Builder<>(new Action<Void>() {
@@ -53,12 +53,12 @@ public class RunnableActionTest {
 			public Void action() throws Throwable {
 				throw new IllegalStateException();
 			}
-		}, getDefaultDeliverer());
-		RunnableAction<Void> action = new RunnableAction<>(builder.build());
+		});
+		RunnableAction<Void> action = new RunnableAction<>(builder.build(), getDefaultDeliverer());
 		action.cancel();
 		action.run();
 	}
-
+	
 	@Test
 	public void cancel_whileRunning_ResponsesIsNotCalled() throws InterruptedException {
 		final CountDownLatch inputLatch = new CountDownLatch(1);
@@ -69,20 +69,22 @@ public class RunnableActionTest {
 				wait();
 				return null;
 			}
-		}, getDefaultDeliverer()).onCompleted(new Response.OnCompleted<Void>() {
-			@Override
-			public void onCompleted(Void response) {
-				fail();
-			}
 		})
+			.onCompleted(new Response.OnCompleted<Void>() {
+				@Override
+				public void onCompleted(Void response) {
+					fail();
+				}
+			})
 			.onError(new Response.OnError() {
 				@Override
 				public void onError(Throwable e) {
 					fail();
 				}
 			});
-		final RunnableAction<Void> action = new RunnableAction<>(builder.build());
-		Executors.newFixedThreadPool(1)
+		final RunnableAction<Void> action = new RunnableAction<>(builder.build(), getDefaultDeliverer());
+		Executors
+			.newFixedThreadPool(1)
 			.execute(new Runnable() {
 				@Override
 				public void run() {
@@ -96,5 +98,5 @@ public class RunnableActionTest {
 			});
 		action.run();
 	}
-
+	
 }
