@@ -8,13 +8,13 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 public class KommandTokenBoxTest {
-
+	
 	private KommandTokenBox tokenBox;
-
+	
 	public KommandTokenBoxTest() {
 		this.tokenBox = new KommandTokenBox();
 	}
-
+	
 	@Test
 	public void append_nullToken_exceptionThrown() {
 		try {
@@ -23,7 +23,7 @@ public class KommandTokenBoxTest {
 		} catch (Exception ignored) {
 		}
 	}
-
+	
 	@Test
 	public void append_tokenWithNullTag_exceptionThrown() {
 		KommandToken kommandToken = mock(KommandToken.class);
@@ -33,7 +33,7 @@ public class KommandTokenBoxTest {
 		} catch (Exception ignored) {
 		}
 	}
-
+	
 	@Test
 	public void cancel_withKnownTag_cancelled() {
 		String tag = "TAG";
@@ -42,7 +42,7 @@ public class KommandTokenBoxTest {
 		tokenBox.cancel(tag);
 		verify(kommandToken).cancel();
 	}
-
+	
 	@Test
 	public void cancel_toUnknownTag_tokenIsNotCancelled() {
 		KommandToken kommandToken = mock(KommandToken.class);
@@ -50,7 +50,7 @@ public class KommandTokenBoxTest {
 		tokenBox.cancel("TAG");
 		verify(kommandToken, never()).cancel();
 	}
-
+	
 	@Test
 	public void cancelAll_withAppendedTokens_areCancelled() {
 		KommandToken token1 = mock(KommandToken.class);

@@ -1,7 +1,5 @@
 package com.wokdsem.kommander;
 
-import java.lang.ref.WeakReference;
-
 /**
  * A {@code Kommand} is an asynchronous context builder of an {@link Action} and the environment where the Action will
  * be executed. {@code Kommand} makes easy setting up the response (successful or erroneous) handlers to the future
@@ -16,18 +14,19 @@ import java.lang.ref.WeakReference;
  */
 public class Kommand<T> {
 	
+	private final Dispatcher dispatcher;
 	private final RunnableActionBundle.Builder<T> bundleBuilder;
-	private final Executor executor;
+	private long msDelay = 0;
 	
-	Kommand(Action<T> action, Deliverer deliverer, Executor executor) {
-		this.bundleBuilder = new RunnableActionBundle.Builder<>(action, deliverer);
-		this.executor = executor;
+	Kommand(Action<T> action, Dispatcher dispatcher) {
+		this.bundleBuilder = new RunnableActionBundle.Builder<>(action);
+		this.dispatcher = dispatcher;
 	}
 	
 	/**
 	 * Sets to the {@code Kommand} the callback to an successful calculation.
 	 *
-	 * @param onCompleted value that is called with {@code T} calculation, a {@code null} value is allowed.
+	 * @param onCompleted value that is called with {@code T} calculation, a {@code null} value is allowed
 	 */
 	public Kommand<T> setOnCompleted(Response.OnCompleted<T> onCompleted) {
 		bundleBuilder.onCompleted(onCompleted);
@@ -37,7 +36,7 @@ public class Kommand<T> {
 	/**
 	 * Sets to the {@code Kommand} the callback to an erroneous calculation.
 	 *
-	 * @param onError value that is called with the {@link Throwable} that caused the fail.
+	 * @param onError value that is called with the {@link Throwable} that caused the fail
 	 */
 	public Kommand<T> setOnError(Response.OnError onError) {
 		bundleBuilder.onError(onError);
@@ -45,17 +44,28 @@ public class Kommand<T> {
 	}
 	
 	/**
+	 * Sets the time to delay the kommand execution.
+	 *
+	 * @param msDelay time in milliseconds to delay the execution
+	 * @throws IllegalArgumentException when delay value is negative
+	 */
+	public Kommand<T> delay(long msDelay) {
+		if (msDelay < 0) {
+			throw new IllegalArgumentException("Negative delay is not allowed");
+		}
+		this.msDelay = msDelay;
+		return this;
+	}
+	
+	/**
 	 * Requests to execute the current kommand context in the future.
 	 *
-	 * @return a KommandToken that enables to cancel the asynchronous execution.
+	 * @return a KommandToken that enables to cancel the asynchronous execution
 	 */
 	public KommandToken kommand() {
-		RunnableActionBundle<T> bundle = bundleBuilder.build();
-		RunnableAction<T> runnableAction = new RunnableAction<>(bundle);
-		executor.execute(runnableAction);
-		return new WeakKommandToken(runnableAction);
+		return dispatcher.kommand(bundleBuilder.build(), msDelay);
 	}
-
+	
 	/**
 	 * Requests to execute the current kommand context in the future.
 	 *
@@ -65,7 +75,7 @@ public class Kommand<T> {
 		assertTokenBox(tokenBox);
 		tokenBox.append(kommand());
 	}
-
+	
 	/**
 	 * Requests to execute the current kommand context in the future.
 	 *
@@ -76,27 +86,10 @@ public class Kommand<T> {
 		assertTokenBox(tokenBox);
 		tokenBox.append(kommand(), tag);
 	}
-
+	
 	private void assertTokenBox(KommandTokenBox tokenBox) {
 		if (tokenBox == null) {
 			throw new IllegalArgumentException("Null tokenBox is not allowed");
-		}
-	}
-
-	private static class WeakKommandToken implements KommandToken {
-		
-		private final WeakReference<RunnableAction> actionReference;
-		
-		private WeakKommandToken(RunnableAction runnableAction) {
-			this.actionReference = new WeakReference<>(runnableAction);
-		}
-		
-		@Override
-		public void cancel() {
-			RunnableAction runnableAction = actionReference.get();
-			if (runnableAction != null) {
-				runnableAction.cancel();
-			}
 		}
 	}
 	

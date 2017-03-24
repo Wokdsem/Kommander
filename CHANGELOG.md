@@ -1,5 +1,10 @@
 # Change Log
 
+## Kommander 1.2.0 (2017-03-24)
++ Delay kommand execution
++ Remove pollSize instantiation
++ The executor can be set up during Kommander instantiation
+
 ## Kommander 1.1.0 (2017-02-27)
 + Add KommandTokenBox concept
 

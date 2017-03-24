@@ -4,13 +4,13 @@ plugins {
 apply plugin: 'java'
 apply plugin: 'maven-publish'
 
-def versionName = "1.1.0"
+def versionName = "1.2.0"
 
 sourceCompatibility = 1.7
 
 dependencies {
-	testCompile 'junit:junit:4.12',
-		'org.mockito:mockito-core:2.+'
+	testCompile 'org.mockito:mockito-core:2.7.+'
+	testCompile 'junit:junit:4.12'
 }
 
 publishing {
