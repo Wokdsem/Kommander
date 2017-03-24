@@ -1,51 +1,56 @@
 package com.wokdsem.kommander;
 
-import java.util.Locale;
+import java.util.concurrent.Executor;
 
+/**
+ * {@code Kommander} is the entry point to the <b>Kommander</b> tool. You need to use a {@code Kommander} instance to build the key
+ * component, the {@link Kommand}. Built Kommands will be executed on the {@link Executor} and delivered on the {@link Deliverer}
+ * of {@code Kommander}.
+ */
 public class Kommander {
-
-	private static final int DEFAULT_CORE_POOL_SIZE;
-
-	static {
-		Runtime runtime = Runtime.getRuntime();
-		int cpuCount = runtime.availableProcessors();
-		DEFAULT_CORE_POOL_SIZE = Math.max(cpuCount, 2);
+	
+	private final Dispatcher dispatcher;
+	
+	private Kommander(Deliverer deliverer, Executor executor) {
+		this.dispatcher = new Dispatcher(deliverer, executor);
 	}
-
-	private final Deliverer deliverer;
-	private final Executor executor;
-
-	private Kommander(Deliverer deliverer, int poolSize) {
-		this.deliverer = deliverer;
-		this.executor = new Executor(poolSize);
-	}
-
+	
+	/**
+	 * Builds a new Kommander instance with the default Kommander's {@link Executor} on the given {@link Deliverer}.
+	 *
+	 * @return the {@code Kommander} instance
+	 * @throws IllegalArgumentException when the given {@link Deliverer} is null
+	 */
 	public static Kommander getInstance(Deliverer deliverer) {
-		return getInstance(deliverer, DEFAULT_CORE_POOL_SIZE);
+		return getInstance(deliverer, KommandExecutor.newInstance());
 	}
-
-	public static Kommander getInstance(Deliverer deliverer, int poolSize) {
-		assertDeliverer(deliverer);
-		assertPoolSize(poolSize);
-		return new Kommander(deliverer, poolSize);
-	}
-
-	private static void assertDeliverer(Deliverer deliverer) {
+	
+	/**
+	 * Builds a new Kommander instance with the given {@link Executor} and {@link Deliverer}.
+	 *
+	 * @return the {@code Kommander} instance
+	 * @throws IllegalArgumentException when the given {@link Deliverer} is null
+	 * @throws IllegalArgumentException when the given {@link Executor} is null
+	 */
+	public static Kommander getInstance(Deliverer deliverer, Executor executor) {
 		if (deliverer == null) {
 			throw new IllegalArgumentException("Illegal null deliverer to instantiate Kommander.");
 		}
-	}
-
-	private static void assertPoolSize(int poolSize) {
-		if (poolSize < 1) {
-			String illegalPoolMessage = "Non positive (%d) pool size to instantiate Kommander";
-			String errMessage = String.format(Locale.getDefault(), illegalPoolMessage, poolSize);
-			throw new IllegalArgumentException(errMessage);
+		if (executor == null) {
+			throw new IllegalArgumentException("Illegal null executor to instantiate Kommander.");
 		}
+		return new Kommander(deliverer, executor);
 	}
-
+	
+	/**
+	 * Builds a {@link Kommand} bound to this {@code Kommander}.
+	 *
+	 * @param action value that defines the {@link Action} of the {@link Kommand}
+	 * @param <T> the type of the {@link Kommand}
+	 * @return a {@link Kommand} bound to this {@code Kommander}
+	 */
 	public <T> Kommand<T> makeKommand(Action<T> action) {
-		return new Kommand<>(action, deliverer, executor);
+		return new Kommand<>(action, dispatcher);
 	}
-
+	
 }

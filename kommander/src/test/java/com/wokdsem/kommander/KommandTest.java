@@ -9,15 +9,13 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 public class KommandTest {
-
-	private final Deliverer deliverer;
-	private final Executor executor;
-
+	
+	private final Dispatcher dispatcher;
+	
 	public KommandTest() {
-		this.deliverer = Deliverers.getDefaultDeliverer();
-		this.executor = new Executor(2);
+		this.dispatcher = new Dispatcher(Deliverers.getDefaultDeliverer(), KommandExecutor.newInstance());
 	}
-
+	
 	@Test
 	public void setOnCompleted_integerAction_integerReceivedOnCompleted() throws InterruptedException {
 		final int valueAction = 5;
@@ -27,7 +25,7 @@ public class KommandTest {
 			public Integer action() throws Throwable {
 				return valueAction;
 			}
-		}, deliverer, executor).setOnCompleted(new Response.OnCompleted<Integer>() {
+		}, dispatcher).setOnCompleted(new Response.OnCompleted<Integer>() {
 			@Override
 			public void onCompleted(Integer response) {
 				assertThat(response, is(valueAction));
@@ -37,7 +35,7 @@ public class KommandTest {
 		kommand.kommand();
 		latch.await();
 	}
-
+	
 	@Test
 	public void setOnError_exceptionAction_exceptionReceivedOnError() throws InterruptedException {
 		final CountDownLatch latch = new CountDownLatch(1);
@@ -46,7 +44,7 @@ public class KommandTest {
 			public Void action() throws Throwable {
 				throw new NullPointerException();
 			}
-		}, deliverer, executor).setOnError(new Response.OnError() {
+		}, dispatcher).setOnError(new Response.OnError() {
 			@Override
 			public void onError(Throwable e) {
 				latch.countDown();
@@ -56,7 +54,7 @@ public class KommandTest {
 		boolean released = latch.await(1_000, TimeUnit.MILLISECONDS);
 		assertThat(released, is(true));
 	}
-
+	
 	@Test
 	public void kommand_cancelKommand_kommandIsCancelled() throws InterruptedException {
 		final CountDownLatch inputLatch = new CountDownLatch(1);
@@ -72,14 +70,14 @@ public class KommandTest {
 				}
 				return null;
 			}
-		}, deliverer, executor);
+		}, dispatcher);
 		KommandToken token = kommand.kommand();
 		inputLatch.await();
 		token.cancel();
 		boolean released = outputLatch.await(1_000, TimeUnit.MILLISECONDS);
 		assertThat(released, is(true));
 	}
-
+	
 	@Test
 	public void kommandWithTokenBox_cancelAll_kommandIsCancelled() throws InterruptedException {
 		KommandTokenBox tokenBox = new KommandTokenBox();
@@ -96,14 +94,14 @@ public class KommandTest {
 				}
 				return null;
 			}
-		}, deliverer, executor);
+		}, dispatcher);
 		kommand.kommand(tokenBox);
 		inputLatch.await();
 		tokenBox.cancelAll();
 		boolean released = outputLatch.await(1_000, TimeUnit.MILLISECONDS);
 		assertThat(released, is(true));
 	}
-
+	
 	@Test
 	public void kommandWithTokenBoxTagged_cancelWithTag_kommandIsCancelled() throws InterruptedException {
 		String tag = "TAG";
@@ -121,12 +119,12 @@ public class KommandTest {
 				}
 				return null;
 			}
-		}, deliverer, executor);
+		}, dispatcher);
 		kommand.kommand(tokenBox, tag);
 		inputLatch.await();
 		tokenBox.cancel(tag);
 		boolean released = outputLatch.await(1_000, TimeUnit.MILLISECONDS);
 		assertThat(released, is(true));
 	}
-
+	
 }
