@@ -5,16 +5,16 @@ to solve **Android UI Thread Issue**.
 
 ## Usage 
 
-**Kommander** is designed to be really simple to use. First of all, you need to create a *Kommander* instance. 
+**Kommander** is designed to be really simple to use. First of all, you need to create a ```Kommander``` instance. 
 
 ```java
 Deliverer deliverer = getKommandDeliverer();
 Kommander kommander = Kommander.getInstance(deliverer);
 ```
 
-Like code shows, you needs to provide a **Deliverer** instance to build a *Kommander*. A *deliverer* is just the way to define how and when 
-*Kommander* will deliver the result of an asynchronous execution.  
-For instance, using *Kommander* on Android, you could use the next code to release the results on the Android's UI Thread. 
+Like code shows, you needs to provide a ```Deliverer``` instance to build a ```Kommander```. A ```Deliverer``` is just the way to define how and when 
+```Kommander``` will deliver the result of an asynchronous execution.  
+For instance, using ```Kommander``` on Android, you could use the next code to release the results on the Android's UI Thread. 
 
 ```java
 @Provides(singleton = true)
@@ -26,7 +26,7 @@ Kommander provideKommander() {
 
 #### Kommands
 
-Now, you have defined a *Kommander* instance, let's launch an asynchronous execution. 
+Now, you have defined a ```Kommander``` instance, let's launch an asynchronous execution. 
 
 ```java
 kommander.makeKommand(() -> interactor.searchMovie("Titanic"))
@@ -34,7 +34,7 @@ kommander.makeKommand(() -> interactor.searchMovie("Titanic"))
     .kommand();
 ```
 
-This example is executing an asynchronous search of a movie and releases the result on ```paintMovies()``` method when all have worked fine.  
+This example is executing an asynchronous search of a movie and releases the result on ```paintMovies()``` when all has worked fine.  
 
   + Let's see each step in detail:
     
@@ -49,7 +49,7 @@ This example is executing an asynchronous search of a movie and releases the res
     });	
     ```
     
-    A *Kommand* is an asynchronous context builder of an **Action**, where it can be defined like a piece of code to be executed in the future 
+    A ```Kommand``` is an asynchronous context builder of an ```Action```, where it can be defined like a piece of code to be executed in the future 
 	that returns a value or throws an exception.  
     
     * Setting up the callback **Response**
@@ -69,8 +69,8 @@ This example is executing an asynchronous search of a movie and releases the res
     }
     ```
     
-	In this step a Response.OnCompleted is being set up, that is who is going to handle the *Action* result. Also, in a similar way, is  
-	possible setting up the Response.OnError when something is not going fine in the *Action* execution.
+	In this step a ```Response.OnCompleted``` is being set up, that is who is going to handle the ```Action``` result. Also, in a similar way, is  
+	possible setting up the ```Response.OnError``` when something is not going fine in the ```Action``` execution.
     
 	```java
     kommand = kommand.setOnError(new Response.OnError() {
@@ -87,8 +87,9 @@ This example is executing an asynchronous search of a movie and releases the res
     KommandToken token = kommand.kommand();
     ``` 
     
-    When a *Kommand* is fully defined, it can be launched to an asynchronous execution with ```kommand()```.  
-    A **KommandToken** is returned, you can use it to cancel the *Kommand* execution. A canceled *Kommand*, will never be executed if the execution has not started yet, try to stop the execution if that is running, or at least, the response is not delivered when the execution finish.  
+    When a ```Kommand``` is fully defined, it can be launched to an asynchronous execution with ```kommand()```.  
+    A ```KommandToken``` is returned, you can use it to cancel the ```Kommand``` execution. A canceled ```Kommand```, will never be executed if the 
+    execution has not started yet, try to stop the execution if that is running, or at least, the response is not delivered when the execution finish.  
 
   + **Delay** execution
   
@@ -101,8 +102,9 @@ This example is executing an asynchronous search of a movie and releases the res
  
 #### KommandTokenBox
 
-  When you make ```Kommand.kommand()``` you receive a *KommandToken* instance to take control of the kommand cancellation with 
-  ```KommandToken.cancel()```, but often managing these tokens is a few unpleasant. So you can take advance of **KommandTokenBox** to easy the cancel control.
+  When you make ```Kommand.kommand()``` you receive a ```KommandToken``` instance to take control of the kommand cancellation with 
+  ```KommandToken.cancel()```, but often managing these tokens is a few unpleasant. So you can take advance of ```KommandTokenBox``` to easy the 
+  cancel control.
   
   + Add tokens to box
     
