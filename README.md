@@ -8,25 +8,12 @@ to solve **Android UI Thread Issue**.
 **Kommander** is designed to be really simple to use. First of all, you need to create a ```Kommander``` instance. 
 
 ```java
-Deliverer deliverer = getKommandDeliverer();
-Kommander kommander = Kommander.getInstance(deliverer);
+Kommander kommander = Kommander.getInstance();
 ```
 
-Like code shows, you needs to provide a ```Deliverer``` instance to build a ```Kommander```. A ```Deliverer``` is just the way to define how and when 
-```Kommander``` will deliver the result of an asynchronous execution.  
-For instance, using ```Kommander``` on Android, you could use the next code to release the results on the Android's UI Thread. 
-
-```java
-@Provides(singleton = true)
-Kommander provideKommander() {
-    Handler handler = new Handler(Looper.getMainLooper());
-    return Kommander.getInstance(handler::post);
-}
-```
+That was easy, right? Now, let's launch an asynchronous execution.  
 
 #### Kommands
-
-Now, you have defined a ```Kommander``` instance, let's launch an asynchronous execution. 
 
 ```java
 kommander.makeKommand(() -> interactor.searchMovie("Titanic"))
@@ -69,7 +56,7 @@ This example is executing an asynchronous search of a movie and releases the res
     }
     ```
     
-	In this step a ```Response.OnCompleted``` is being set up, that is who is going to handle the ```Action``` result. Also, in a similar way, is  
+	In this step a ```Response.OnCompleted``` is being set up, that is who is going to handle the ```Action``` result. Also, in a similar way, is
 	possible setting up the ```Response.OnError``` when something is not going fine in the ```Action``` execution.
     
 	```java
@@ -91,14 +78,33 @@ This example is executing an asynchronous search of a movie and releases the res
     A ```KommandToken``` is returned, you can use it to cancel the ```Kommand``` execution. A canceled ```Kommand```, will never be executed if the 
     execution has not started yet, try to stop the execution if that is running, or at least, the response is not delivered when the execution finish.  
 
-  + **Delay** execution
+  + **Delay** You can define a delay time, in milliseconds, to kommand execution.
   
     ```java
     long millisecondDelay = 60_000L;
     kommand = kommand.delay(millisecondDelay); 
+    ``` 
+    
+  + A **Deliverer** is just a way to define how and when ```Kommander``` will deliver the result of an asynchronous execution.   
+    
+    ```java
+    kommand.setDelivered(new Deliverer() {
+        @Override
+        public void deliver(Runnable runnable) {
+            // How do you want to deliver the response? Your code here! 
+        }
+    });
     ```
     
-    You can define a delay time, in milliseconds, to kommand execution. 
+    For instance, using ```Kommander``` on Android, you could use the next ```Deliverer``` to release the results on the Android's UI Thread.
+    
+    ```java
+    @Provides(singleton = true)
+    Deliverer provideAndroidDeliverer() {
+        Handler handler = new Handler(Looper.getMainLooper());
+        return handler::post;
+    }
+    ```
  
 #### KommandTokenBox
 
@@ -140,14 +146,14 @@ checking <a href="https://bintray.com/wokdsem/maven/kommander/view">here</a>.
 <dependency>
   <groupId>com.wokdsem.kommander</groupId>
   <artifactId>kommander</artifactId>
-  <version>1.2.0</version>
+  <version>1.3.0</version>
 </dependency>
 ```
 
 **Gradle:**
 
 ```groovy
-compile 'com.wokdsem.kommander:kommander:1.2.0'
+compile 'com.wokdsem.kommander:kommander:1.3.0'
 ```
 
 ## License
