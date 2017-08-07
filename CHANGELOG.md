@@ -1,5 +1,8 @@
 # Change Log
 
+## Kommander 1.3.0 (2017-08-07)
++ Deliverer instance is not global anymore, each Kommand can define its own one. 
+
 ## Kommander 1.2.0 (2017-03-24)
 + Delay kommand execution
 + Remove pollSize instantiation
