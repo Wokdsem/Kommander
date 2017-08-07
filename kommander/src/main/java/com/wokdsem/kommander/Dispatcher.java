@@ -7,12 +7,10 @@ import java.util.concurrent.TimeUnit;
 
 class Dispatcher {
 	
-	private final Deliverer deliverer;
 	private final Executor executor;
 	private ScheduledExecutorService scheduledExecutor;
 	
-	Dispatcher(Deliverer deliverer, Executor executor) {
-		this.deliverer = deliverer;
+	Dispatcher(Executor executor) {
 		this.executor = executor;
 	}
 	
@@ -34,7 +32,7 @@ class Dispatcher {
 	}
 	
 	private <T> KommandToken rawKommand(RunnableActionBundle<T> bundle) {
-		RunnableAction<T> runnableAction = new RunnableAction<>(bundle, deliverer);
+		RunnableAction<T> runnableAction = new RunnableAction<>(bundle);
 		executor.execute(runnableAction);
 		return KommandTokens.newWeakKommandToken(runnableAction);
 	}

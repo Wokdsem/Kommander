@@ -1,6 +1,5 @@
 package com.wokdsem.kommander;
 
-import com.wokdsem.kommander.toolbox.Deliverers;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.junit.Test;
@@ -13,7 +12,7 @@ public class KommandTest {
 	private final Dispatcher dispatcher;
 	
 	public KommandTest() {
-		this.dispatcher = new Dispatcher(Deliverers.getDefaultDeliverer(), KommandExecutor.newInstance());
+		this.dispatcher = new Dispatcher(KommandExecutor.newInstance());
 	}
 	
 	@Test
