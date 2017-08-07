@@ -88,7 +88,7 @@ This example is executing an asynchronous search of a movie and releases the res
   + A **Deliverer** is just a way to define how and when ```Kommander``` will deliver the result of an asynchronous execution.   
     
     ```java
-    kommand.setDelivered(new Deliverer() {
+    kommand = kommand.setDelivered(new Deliverer() {
         @Override
         public void deliver(Runnable runnable) {
             // How do you want to deliver the response? Your code here! 
