@@ -4,42 +4,36 @@ import java.util.concurrent.Executor;
 
 /**
  * {@code Kommander} is the entry point to the <b>Kommander</b> tool. You need to use a {@code Kommander} instance to build the key
- * component, the {@link Kommand}. Built Kommands will be executed on the {@link Executor} and delivered on the {@link Deliverer}
- * of {@code Kommander}.
+ * component, the {@link Kommand}.
  */
 public class Kommander {
 	
 	private final Dispatcher dispatcher;
 	
-	private Kommander(Deliverer deliverer, Executor executor) {
-		this.dispatcher = new Dispatcher(deliverer, executor);
+	private Kommander(Executor executor) {
+		this.dispatcher = new Dispatcher(executor);
 	}
 	
 	/**
-	 * Builds a new Kommander instance with the default Kommander's {@link Executor} on the given {@link Deliverer}.
+	 * Builds a new Kommander instance with the default Kommander's {@link Executor}.
 	 *
 	 * @return the {@code Kommander} instance
-	 * @throws IllegalArgumentException when the given {@link Deliverer} is null
 	 */
-	public static Kommander getInstance(Deliverer deliverer) {
-		return getInstance(deliverer, KommandExecutor.newInstance());
+	public static Kommander getInstance() {
+		return getInstance(KommandExecutor.newInstance());
 	}
 	
 	/**
-	 * Builds a new Kommander instance with the given {@link Executor} and {@link Deliverer}.
+	 * Builds a new Kommander instance with the given {@link Executor}.
 	 *
 	 * @return the {@code Kommander} instance
-	 * @throws IllegalArgumentException when the given {@link Deliverer} is null
 	 * @throws IllegalArgumentException when the given {@link Executor} is null
 	 */
-	public static Kommander getInstance(Deliverer deliverer, Executor executor) {
-		if (deliverer == null) {
-			throw new IllegalArgumentException("Illegal null deliverer to instantiate Kommander.");
-		}
+	public static Kommander getInstance(Executor executor) {
 		if (executor == null) {
 			throw new IllegalArgumentException("Illegal null executor to instantiate Kommander.");
 		}
-		return new Kommander(deliverer, executor);
+		return new Kommander(executor);
 	}
 	
 	/**

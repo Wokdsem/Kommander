@@ -5,7 +5,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.Test;
 
-import static com.wokdsem.kommander.toolbox.Deliverers.getDefaultDeliverer;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -16,7 +15,7 @@ public class DispatcherTest {
 	private final Dispatcher dispatcher;
 	
 	public DispatcherTest() {
-		this.dispatcher = new Dispatcher(getDefaultDeliverer(), newSingleThreadExecutor());
+		this.dispatcher = new Dispatcher(newSingleThreadExecutor());
 	}
 	
 	@Test

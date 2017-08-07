@@ -5,7 +5,6 @@ import java.util.concurrent.Executors;
 import org.junit.Assert;
 import org.junit.Test;
 
-import static com.wokdsem.kommander.toolbox.Deliverers.getDefaultDeliverer;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -26,7 +25,7 @@ public class RunnableActionTest {
 				assertThat(response, is(value));
 			}
 		});
-		new RunnableAction<>(builder.build(), getDefaultDeliverer()).run();
+		new RunnableAction<>(builder.build()).run();
 	}
 	
 	@Test
@@ -43,7 +42,7 @@ public class RunnableActionTest {
 				Assert.assertEquals(e, npe);
 			}
 		});
-		new RunnableAction<>(builder.build(), getDefaultDeliverer()).run();
+		new RunnableAction<>(builder.build()).run();
 	}
 	
 	@Test
@@ -54,7 +53,7 @@ public class RunnableActionTest {
 				throw new IllegalStateException();
 			}
 		});
-		RunnableAction<Void> action = new RunnableAction<>(builder.build(), getDefaultDeliverer());
+		RunnableAction<Void> action = new RunnableAction<>(builder.build());
 		action.cancel();
 		action.run();
 	}
@@ -82,7 +81,7 @@ public class RunnableActionTest {
 					fail();
 				}
 			});
-		final RunnableAction<Void> action = new RunnableAction<>(builder.build(), getDefaultDeliverer());
+		final RunnableAction<Void> action = new RunnableAction<>(builder.build());
 		Executors
 			.newFixedThreadPool(1)
 			.execute(new Runnable() {

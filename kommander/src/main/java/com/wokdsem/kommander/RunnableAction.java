@@ -11,9 +11,9 @@ class RunnableAction<T> implements Runnable, Cancelable {
 	private Throwable error;
 	private T result;
 	
-	RunnableAction(RunnableActionBundle<T> bundle, Deliverer deliverer) {
+	RunnableAction(RunnableActionBundle<T> bundle) {
 		this.action = bundle.action;
-		this.deliverer = deliverer;
+		this.deliverer = bundle.deliverer;
 		this.onCompleted = bundle.onCompleted;
 		this.onError = bundle.onError;
 		this.state = RunnableState.NEW;
